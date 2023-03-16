@@ -1,6 +1,12 @@
 .App {
   text-align: center;
 }
+.Nav {
+  display: flex;
+  justify-content: space-around;
+  background-color: rgb(170, 145, 115);
+  align-items: center;
+}
 
 .App-logo {
   height: 40vmin;

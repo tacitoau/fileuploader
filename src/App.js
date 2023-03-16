@@ -1,6 +1,8 @@
 import { create } from "ipfs-http-client";
 import "./App.css";
 import { useState } from "react";
+import { useContract, useContractWrite } from "@thirdweb-dev/react";
+import Navbar from "./components/Navbar";
 
 const { REACT_APP_projectId, REACT_APP_projectSecret } = process.env;
 
@@ -24,19 +26,42 @@ const client = create({
 });
 
 function App() {
-  const [file, setfile] = useState();
+  const { contract } = useContract(
+    "0xb71DC906d776D7CaF8F4c0f6e9012fE135e27452"
+  );
+  const { mutateAsync: addFile, isLoading } = useContractWrite(
+    contract,
+    "addFile"
+  );
 
-  let url='';
+  const [file, setfile] = useState();
+  // console.log(contract)
+  // console.log(isLoading)
+
+  let link = "";
+
+  const addfile = async () => {
+    try {
+      const data = await addFile([link]);
+      console.info("contract call successs", data);
+    } catch (err) {
+      console.error("contract call failure", err);
+    }
+  };
 
   const handleClick = async () => {
     console.log(file);
     const add = await client.add(file);
-    url = `https://ipfs.io/ipfs/${add.path}`;
-    console.log(url);
-    document.write("<div>",url,"</div>");
+    link = `https://ipfs.io/ipfs/${add.path}`;
+    console.log(link);
+    const addfilewait = await addfile();
+    console.log(addfilewait);
+    document.getElementById("link").innerHTML = link;
   };
+
   return (
     <div className="App">
+      <Navbar />
       <h1>File Uploader</h1>
       <br />
       <input
@@ -51,8 +76,7 @@ function App() {
       <br />
       <br />
       <br />
-      <div id="url">
-      </div>
+      <p href={link} id="link"></p>
     </div>
   );
 }
