@@ -26,11 +26,14 @@ const client = create({
 function App() {
   const [file, setfile] = useState();
 
+  let url='';
+
   const handleClick = async () => {
     console.log(file);
     const add = await client.add(file);
-    const url = `https://ipfs.io/ipfs/${add.path}`;
+    url = `https://ipfs.io/ipfs/${add.path}`;
     console.log(url);
+    document.write("<div>",url,"</div>");
   };
   return (
     <div className="App">
@@ -45,6 +48,11 @@ function App() {
       <button type="button" onClick={handleClick}>
         Upload
       </button>
+      <br />
+      <br />
+      <br />
+      <div id="url">
+      </div>
     </div>
   );
 }
