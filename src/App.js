@@ -1,12 +1,17 @@
 import { create } from "ipfs-http-client";
 import "./App.css";
 import { useState } from "react";
-import { useContract, useContractWrite } from "@thirdweb-dev/react";
+import {
+  useContract,
+  useContractWrite,
+  ChainId,
+  useNetwork,
+  useChainId,
+  useContractRead,
+} from "@thirdweb-dev/react";
 import Navbar from "./components/Navbar";
 
 const { REACT_APP_projectId, REACT_APP_projectSecret } = process.env;
-
-// const client = ipfsHttpClient("https://ipfs.infura.io:5001/ap/v0");
 
 // authentication
 const auth =
@@ -29,21 +34,27 @@ function App() {
   const { contract } = useContract(
     "0xb71DC906d776D7CaF8F4c0f6e9012fE135e27452"
   );
-  const { mutateAsync: addFile, isLoading } = useContractWrite(
-    contract,
-    "addFile"
-  );
+  const [entry, setentry] = useState(0);
 
   const [file, setfile] = useState();
-  // console.log(contract)
-  // console.log(isLoading)
+  const [switchNetwork] = useNetwork();
+
+  const chainId = useChainId();
+  const { mutateAsync: addFile } = useContractWrite(contract, "addFile");
+
+  const { data } = useContractRead(contract, "retrieveFile", entry);
+
+  const handleGetFile = () => {
+    document.getElementById("entry").innerHTML = data;
+  };
 
   let link = "";
+  console.log("ChainId", chainId);
 
   const addfile = async () => {
     try {
-      const data = await addFile([link]);
-      console.info("contract call successs", data);
+      const dataLink = await addFile([link]);
+      console.info("contract call successs", dataLink);
     } catch (err) {
       console.error("contract call failure", err);
     }
@@ -64,19 +75,38 @@ function App() {
       <Navbar />
       <h1>File Uploader</h1>
       <br />
-      <input
-        placeholder="Select the file"
-        type="file"
-        onChange={(e) => setfile(e.target.files[0])}
-      />
+      {chainId == 5 ? (
+        <>
+          <input
+            placeholder="Select the file"
+            type="file"
+            onChange={(e) => setfile(e.target.files[0])}
+          />
+          <br />
+          <button type="button" onClick={handleClick}>
+            Upload
+          </button>
+          <br />
+          <br />
+          <p href={link} id="link"></p>
+          <hr />
+          <br />
+          <h1>File Retriever</h1>
+          <br />
+          <input
+            placeholder="Enter the File id"
+            type="number"
+            onChange={(e) => setentry(e.target.value)}
+          />
+          <button onClick={handleGetFile}>Retrieve link</button>
+          <div id="entry"></div>
+        </>
+      ) : (
+        <button onClick={() => switchNetwork?.(ChainId.Goerli)}>
+          Switch to Goerli
+        </button>
+      )}
       <br />
-      <button type="button" onClick={handleClick}>
-        Upload
-      </button>
-      <br />
-      <br />
-      <br />
-      <p href={link} id="link"></p>
     </div>
   );
 }
