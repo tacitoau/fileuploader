@@ -1,6 +1,7 @@
 import { create } from "ipfs-http-client";
 import "./App.css";
 import { useState } from "react";
+import Swal from 'sweetalert2'
 import {
   useContract,
   useContractWrite,
@@ -54,6 +55,7 @@ function App() {
   const addfile = async () => {
     try {
       const dataLink = await addFile([link]);
+      Swal.fire('The file has been uploaded successfully')
       console.info("contract call successs", dataLink);
     } catch (err) {
       console.error("contract call failure", err);
