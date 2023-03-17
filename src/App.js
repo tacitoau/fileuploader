@@ -38,7 +38,7 @@ function App() {
   const [entry, setentry] = useState(0);
 
   const [file, setfile] = useState();
-  const [switchNetwork] = useNetwork();
+  const [{loading},switchNetwork] = useNetwork();
 
   const chainId = useChainId();
   const { mutateAsync: addFile } = useContractWrite(contract, "addFile");
@@ -104,9 +104,12 @@ function App() {
           <div id="entry"></div>
         </>
       ) : (
+        <>
+        <p>You are on the wrong chain.</p>
         <button onClick={() => switchNetwork?.(ChainId.Goerli)}>
           Switch to Goerli
         </button>
+        </>
       )}
       <br />
     </div>
