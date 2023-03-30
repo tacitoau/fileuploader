@@ -97,7 +97,7 @@ function App() {
           <br />
           <input
             placeholder="Enter the File id"
-            type="text"
+            type="number"
             onChange={(e) => setentry(e.target.value)}
           />
           <button onClick={handleGetFile}>Retrieve link</button>
